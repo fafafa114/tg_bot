@@ -3,15 +3,15 @@ from query_script.requests import *
 
 def get_kline(name, interval) -> str:
     name = name.upper()
-    currence_data = request_binance(name, interval)
-    if len(currence_data) == 0:
+    currency_data = request_binance(name, interval)
+    if len(currency_data) == 0:
         return "Symbol not found"
     fig = plt.figure(figsize=(22, 16), dpi=250, facecolor=my_black) # create a figure
-    currence_data['time'] = pd.to_datetime(currence_data['time']) # convert time to datetime
-    currence_data = currence_data.set_index('time') # set time as index to make it easier to plot
-    l_xlim = len(currence_data.index)
+    currency_data['time'] = pd.to_datetime(currency_data['time']) # convert time to datetime
+    currency_data = currency_data.set_index('time') # set time as index to make it easier to plot
+    l_xlim = len(currency_data.index)
 
-    Grids = gridspec.GridSpec(4, 1, left=0.04, bottom=0.04, right=1,
+    Grids = gridspec.GridSpec(4, 1, left=0.05, bottom=0.04, right=1,
                               top=0.96, wspace=None, hspace=0, height_ratios=[5, 1, 1, 1])
 
     KAV = fig.add_subplot(Grids[0, :]) # KAV = K line
@@ -29,28 +29,31 @@ def get_kline(name, interval) -> str:
     KDJ.grid(True, color=my_white)
     # set background color
 
-    delta = currence_data.close[-1] - currence_data.close[0]
+    delta = currency_data.close[-1] - currency_data.close[0]
     delta_rate = (
-        currence_data.close[-1] - currence_data.close[0]) / currence_data.close[0] * 100
-    high = currence_data.high.max()
-    high_rate = (high - currence_data.close[0]) / currence_data.close[0] * 100
-    low = currence_data.low.min()
-    low_rate = (low - currence_data.close[0]) / currence_data.close[0] * 100
+        currency_data.close[-1] - currency_data.close[0]) / currency_data.close[0] * 100
+    high = currency_data.high.max()
+    high_rate = (high - currency_data.close[0]) / currency_data.close[0] * 100
+    low = currency_data.low.min()
+    low_rate = (low - currency_data.close[0]) / currency_data.close[0] * 100
 
-    mpl.candlestick2_ochl(KAV, currence_data.open, currence_data.close, currence_data.high, currence_data.low, width=0.65,
+    mpl.candlestick2_ochl(KAV, currency_data.open, currency_data.close, currency_data.high, currency_data.low, width=0.65,
                           colorup='g', colordown='r')  # draw k line
-
-    currence_data['MA10'] = currence_data.close.rolling(window=10).mean() 
-    currence_data['MA30'] = currence_data.close.rolling(window=30).mean()
-    currence_data['MA60'] = currence_data.close.rolling(window=60).mean()
+    # if y axis value is too small, add 'u' to the end of the number
+    if currency_data.close.max() < 0.0001:
+        KAV.yaxis.set_major_formatter(
+            plt.FuncFormatter(lambda x, pos: f'{x:.7f}'))
+    currency_data['MA10'] = currency_data.close.rolling(window=10).mean() 
+    currency_data['MA30'] = currency_data.close.rolling(window=30).mean()
+    currency_data['MA60'] = currency_data.close.rolling(window=60).mean()
     # calculate MA lines
 
     KAV.plot(np.arange(0, l_xlim),
-             currence_data['MA10'], 'green', label='M10', lw=0.9)
+             currency_data['MA10'], 'green', label='M10', lw=0.9)
     KAV.plot(np.arange(0, l_xlim),
-             currence_data['MA30'], 'pink', label='M30', lw=0.9)
+             currency_data['MA30'], 'pink', label='M30', lw=0.9)
     KAV.plot(np.arange(0, l_xlim),
-             currence_data['MA60'], 'yellow', label='M60', lw=0.9)
+             currency_data['MA60'], 'yellow', label='M60', lw=0.9)
     # draw MA lines
 
     KAV.legend(loc='best') 
@@ -58,17 +61,23 @@ def get_kline(name, interval) -> str:
     cur_time = cur_time.strftime('%d/%m/%Y %H:%M')
     KAV.text(0.3, 1.035, name + ' until ' + cur_time + '(UTC)', color='white', fontsize=20,
              horizontalalignment='right', verticalalignment='top', transform=KAV.transAxes, fontweight='bold')
-    KAV.text(0.42, 1.035, f'Delta: {delta:.2f} {delta_rate:.2f}%', color='g' if delta >= 0 else 'r', fontsize=20,
+    if delta > 1:
+        KAV.text(0.42, 1.035, f'Delta: {delta:.2f} {delta_rate:.2f}%', color='g' if delta >= 0 else 'r', fontsize=20,
              horizontalalignment='left', verticalalignment='top', transform=KAV.transAxes, fontweight='bold')
-    KAV.text(0.99, 1.035, f'High: {high:.2f} {high_rate:.2f}%    Low: {low:.2f} {low_rate:.2f}%', color='white',
+    else:
+        KAV.text(0.42, 1.035, f'Delta: {delta:.7f} {delta_rate:.2f}%', color='g' if delta >= 0 else 'r', fontsize=20,
+             horizontalalignment='left', verticalalignment='top', transform=KAV.transAxes, fontweight='bold')
+    if low > 1:
+        KAV.text(0.99, 1.035, f'High: {high:.2f} {high_rate:.2f}%    Low: {low:.2f} {low_rate:.2f}%', color='white',
              fontsize=20, horizontalalignment='right', verticalalignment='top', transform=KAV.transAxes, fontweight='bold')
-    # put delta, high, low on the top of the graph
-    
+    else:
+        KAV.text(0.99, 1.035, f'High: {high:.7f} {high_rate:.2f}%    Low: {low:.7f} {low_rate:.2f}%', color='white',
+             fontsize=20, horizontalalignment='right', verticalalignment='top', transform=KAV.transAxes, fontweight='bold')    
     KAV.set_ylabel(u"PRICE", color='white', fontweight='bold')
     KAV.set_xlim(0, l_xlim)
-
-    VOL.bar(np.arange(0, l_xlim), currence_data.vol, color=[
-        my_green if currence_data.open[x] > currence_data.close[x] else my_red for x in range(0, l_xlim)])
+    
+    VOL.bar(np.arange(0, l_xlim), currency_data.vol, color=[
+        my_green if currency_data.open[x] > currency_data.close[x] else my_red for x in range(0, l_xlim)])
     # draw volume bar and set color
 
     VOL.set_ylabel(u"VOLUME", color='white', fontweight='bold')
@@ -76,7 +85,7 @@ def get_kline(name, interval) -> str:
     VOL.set_xticks(range(0, l_xlim, 12))
 
     MACD_dif, MACD_dea, MACD_bar = talib.MACD(
-        currence_data['close'].values, fastperiod=6, slowperiod=13, signalperiod=4.5) # calculate MACD
+        currency_data['close'].values, fastperiod=6, slowperiod=13, signalperiod=4.5) # calculate MACD
     MACD.plot(np.arange(0, l_xlim),
               MACD_dif, 'pink', label='MACD dif')
     MACD.plot(np.arange(0, l_xlim),
@@ -96,7 +105,7 @@ def get_kline(name, interval) -> str:
     MACD.set_xlim(0, l_xlim)
     MACD.set_xticks(
         range(0, l_xlim, 16))
-    KDJ_K, KDJ_D = talib.STOCH(currence_data.high.values, currence_data.low.values, currence_data.close.values,
+    KDJ_K, KDJ_D = talib.STOCH(currency_data.high.values, currency_data.low.values, currency_data.close.values,
                                                          fastk_period=9, slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
     KDJ_J = 3 * KDJ_K - 2 * KDJ_D
     # calculate KDJ
@@ -114,7 +123,7 @@ def get_kline(name, interval) -> str:
     KDJ.set_xlim(0, l_xlim)
     KDJ.set_xticks(range(0, l_xlim, 16))
     KDJ.set_xticklabels(
-        [currence_data.index.strftime('%m-%d %H:%M')[index] for index in KDJ.get_xticks()])
+        [currency_data.index.strftime('%m-%d %H:%M')[index] for index in KDJ.get_xticks()])
 
 
 
@@ -151,7 +160,7 @@ def get_kline(name, interval) -> str:
     return f'''
 {name} from binance
 Until {cur_time}
-Current: {currence_data.close[-1]:.2f}
+Current: {currency_data.close[-1]:.7f}
 TimeZone: (UTC) Coordinated Universal Time
 Volume Unit: Symbol
 '''
