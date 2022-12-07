@@ -18,7 +18,7 @@ plt.rcParams['axes.unicode_minus'] = False
 fig = plt.figure(figsize=(19, 11), dpi=80, facecolor=my_black)
 
 # https://stackoverflow.com/a/74628882
-def get_binance_data_request_(ticker, interval='4h', limit=300):
+def request_binance(ticker, interval='4h', limit=300):
     columns = ['open_time', 'open', 'high', 'low', 'close', 'volume', 'close_time',
                'qav', 'num_trades', 'taker_base_vol', 'taker_quote_vol', 'ignore']
     url = f'https://www.binance.com/api/v3/klines?symbol={ticker}&interval={interval}&limit={limit}'
@@ -31,8 +31,10 @@ def get_binance_data_request_(ticker, interval='4h', limit=300):
     return data
 
 def query(name):
-    currence_data = get_binance_data_request_(name, '1h')
+    name = name.upper()
+    currence_data = request_binance(name, '1h')
     if len(currence_data) == 0:
+        print('No data')
         return
         
     currence_data['open_time'] = pd.to_datetime(currence_data['open_time'])
@@ -148,10 +150,8 @@ def query(name):
         label.set_rotation(30)
         label.set_color("white")
         label.set_fontsize(9)
-
     plt.savefig('kl.jpg')
-
     # plt.show()
 
-query('BNBUSDT')
 
+# query('BTCUSDT')
