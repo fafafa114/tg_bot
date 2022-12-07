@@ -39,10 +39,14 @@ def get_kline(name, interval) -> str:
 
     mpl.candlestick2_ochl(KAV, currency_data.open, currency_data.close, currency_data.high, currency_data.low, width=0.65,
                           colorup='g', colordown='r')  # draw k line
-    # if y axis value is too small, add 'u' to the end of the number
-    if currency_data.close.max() < 0.0001:
+
+    if currency_data.close.max() < 0.001:
         KAV.yaxis.set_major_formatter(
             plt.FuncFormatter(lambda x, pos: f'{x:.7f}'))
+    else:
+        KAV.yaxis.set_major_formatter(
+            plt.FuncFormatter(lambda x, pos: f'{x:.2f}'))
+    
     currency_data['MA10'] = currency_data.close.rolling(window=10).mean() 
     currency_data['MA30'] = currency_data.close.rolling(window=30).mean()
     currency_data['MA60'] = currency_data.close.rolling(window=60).mean()
