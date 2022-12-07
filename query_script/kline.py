@@ -1,7 +1,6 @@
 from query_script.config import *
 from query_script.requests import *
 
-
 def get_kline(name, interval) -> str:
     name = name.upper()
     currence_data = request_binance(name, interval)

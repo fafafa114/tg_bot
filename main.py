@@ -64,9 +64,9 @@ dispatcher.add_handler(kd_handler)
 dispatcher.add_handler(s_handler)
 bot.set_my_commands([
     BotCommand('kq', '<symbol> 15min kline'),
-    BotCommand('km', '<symbol> 1m kline'),
-    BotCommand('kh', '<symbol> 1h Kline'),
-    BotCommand('kd', '<symbol> 1d kline'),
+    BotCommand('km', '<symbol> 1min kline'),
+    BotCommand('kh', '<symbol> 1hour Kline'),
+    BotCommand('kd', '<symbol> 1day kline'),
     BotCommand('s', 'Search symbol <symbol>')]
 )
 updater.start_polling()

@@ -4,7 +4,7 @@
 
 Project of Yang Chenran
 
-Cryptocurrency price lookup bot. Supports querying prices, delta, high/low prices, drawing k-line charts/MACD/KDJ lines and search symbols with binance API.
+Cryptocurrency price lookup bot. Supports querying prices, delta, high/low prices, drawing k-line/MACD/KDJ/MA lines and searching symbols with binance API.
 
 You can find it on telegram [@rug_pull_bot](https://t.me/rug_pull_bot) .
 
