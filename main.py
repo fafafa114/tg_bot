@@ -5,9 +5,7 @@ from telegram.ext import Updater, CallbackContext, CommandHandler, MessageHandle
 from query_script import kline, search_symbol
 
 token = open('TOKEN.txt', 'r').read()
-
 bot = Bot(token=token)
-
 updater = Updater(token=token, use_context=True)
 dispatcher = updater.dispatcher
 
@@ -46,7 +44,7 @@ def s_command(update: Update, context: CallbackContext):
     name = update.message.text[3:]
     name = name.replace(' ', '')
     if name == '':
-        return 
+        return
     symbols = search_symbol.search(name)
     symbols = '`Symbols found:\n\t' + '\n\t'.join(symbols) + "`"
     bot.sendMessage(chat_id=update.effective_chat.id, text=symbols,
@@ -68,7 +66,7 @@ bot.set_my_commands([
     BotCommand('kq', '<symbol> 15min kline'),
     BotCommand('km', '<symbol> 1m kline'),
     BotCommand('kh', '<symbol> 1h Kline'),
-    BotCommand('kd', '<symbol> 1d kline'), 
+    BotCommand('kd', '<symbol> 1d kline'),
     BotCommand('s', 'Search symbol <symbol>')]
 )
 updater.start_polling()

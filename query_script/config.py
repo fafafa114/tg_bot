@@ -15,3 +15,5 @@ my_black = (31/255, 31/255, 31/255)
 
 np.seterr(invalid='ignore', divide='ignore')
 plt.rcParams['axes.unicode_minus'] = False
+
+# initializations
