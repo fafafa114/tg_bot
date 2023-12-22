@@ -2,15 +2,16 @@
 
 #### Introduction
 
+Store the token in TOKEN.txt
+
 Project of Yang Chenran
 
 Cryptocurrency price lookup bot. Supports querying prices, delta, high/low prices, drawing k-line/MACD/KDJ/MA lines and searchingO symbols with binance API.
 
-You can find it on telegram [@rug_pull_bot](https://t.me/rug_pull_bot) .
 
 #### Commands and usage
 
-See the menu of [@rug_pull_bot](https://t.me/rug_pull_bot).
+See the menu of bot
 
 #### Example
 
@@ -46,4 +47,3 @@ Volume Unit: Symbol
 
 ---
 
-If it doesn't respond, please contact [me](https://t.me/chenranyang) to run it)))
